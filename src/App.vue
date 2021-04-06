@@ -26,7 +26,7 @@ export default {
 </script>
 
 <style>
-body {
+/* body {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -37,5 +37,5 @@ body {
   max-width: 800px;
   max-height: 600px;
   background: #444;
-}
+} */
 </style>

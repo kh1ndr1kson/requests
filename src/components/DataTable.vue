@@ -17,7 +17,7 @@
         <v-toolbar-title>Спортсмены</v-toolbar-title>
         <v-divider class="mx-4" inset vertical></v-divider>
         <v-spacer></v-spacer>
-        <v-dialog v-model="dialog" max-width="500px">
+        <v-dialog v-model="dialog" scrollable max-width="500px">
           <template v-slot:activator="{ on, attrs }">
             <v-btn
               color="primary"
@@ -33,10 +33,10 @@
             <v-card-title>
               <span class="headline">{{ formTitle }}</span>
             </v-card-title>
-
+            <v-divider></v-divider>
             <v-card-text>
               <v-container class="p-0">
-                <v-row>
+                <v-row class="pt-5">
                   <v-col cols="12">
                     <v-text-field
                       outlined
@@ -95,22 +95,75 @@
                       label="Дата рождения *"
                     ></v-text-field>
                   </v-col>
-                  <div>
+                  <v-col class="d-flex" cols="12">
+                    <v-select
+                      :items="discharges"
+                      v-model="editedItem.discharge_id"
+                      name="editedItem.discharge_id"
+                      item-value="id"
+                      item-text="name"
+                      label="Спортивный разряд *"
+                      dense
+                      outlined
+                    ></v-select>
+                  </v-col>
+                  <v-col class="d-flex" cols="12">
+                    <v-select
+                      :items="disciplines"
+                      v-model="editedItem.discipline_id"
+                      name="editedItem.discipline_id"
+                      item-value="id"
+                      item-text="name"
+                      label="Дисциплина *"
+                      dense
+                      outlined
+                    ></v-select>
+                  </v-col>
+                  <v-col class="d-flex" cols="12">
+                    <v-select
+                      :items="classes"
+                      v-model="editedItem.class_id"
+                      name="editedItem.class_id"
+                      item-value="id"
+                      item-text="name"
+                      label="Класс *"
+                      dense
+                      outlined
+                    ></v-select>
+                  </v-col>
+                  <v-radio-group class="mt-0" v-model="editedItem.vroo">
+                    <template v-slot:label>
+                      <div>Являетесь ли вы членом ВРОО "ВолФес"?</div>
+                    </template>
+                    <v-radio value="1">
+                      <template v-slot:label>
+                        <div>Да</div>
+                      </template>
+                    </v-radio>
+                    <v-radio value="0">
+                      <template v-slot:label>
+                        <div>Нет</div>
+                      </template>
+                    </v-radio>
+                  </v-radio-group>
+                  <v-col cols="12">
                     <v-checkbox
                       v-model="editedItem.status"
                       label="Активный"
+                      :true-value="'1'"
+                      :false-value="'0'"
                       color="primary"
                       hide-details
                       class="mt-0 pb-5"
                     ></v-checkbox>
-                  </div>
+                  </v-col>
                 </v-row>
               </v-container>
               <p class="muted font-italic mb-0">
                 * Обязательные для заполнения поля
               </p>
             </v-card-text>
-
+            <v-divider></v-divider>
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="red darken-1" text @click="close">Закрыть</v-btn>
@@ -167,6 +220,9 @@ export default {
       { text: '', value: 'actions', sortable: false, align: 'right' },
     ],
     sportsmen: [],
+    discharges:[], // v-select
+    disciplines: [], // v-select
+    classes: [], // v-select
     editedIndex: -1,
     editedItem: {
       id: null,
@@ -177,6 +233,10 @@ export default {
       email: null,
       location: null,
       birthday: null,
+      discharge_id: 0,
+      discipline_id: 0,
+      class_id: 0,
+      vroo: 0,
       status: 0,
     },
     defaultItem: {
@@ -188,6 +248,10 @@ export default {
       email: null,
       location: null,
       birthday: null,
+      discharge_id: 0,
+      discipline_id: 0,
+      class_id: 0,
+      vroo: 0,
       status: 0,
     },
   }),
@@ -218,6 +282,16 @@ export default {
       .catch( error => {
         console.log('Hello error', error)
       })
+
+      // push discharges (v-select)
+      HTTP.get('select/discharges.php')
+      .then( response => this.discharges = response.data )
+      // push discharges (v-select)
+      HTTP.get('select/disciplines.php')
+      .then( response => this.disciplines = response.data )
+      // push classes (v-select)
+      HTTP.get('select/classes.php')
+      .then( response => this.classes = response.data )
     },
 
     editItem (item) {
