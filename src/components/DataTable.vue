@@ -62,13 +62,31 @@
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12">
-                    <v-text-field
+                    <vue-phone-number-input
+                      class="mb-5"
                       outlined
                       dense
                       v-model="editedItem.phone"
-                      v-mask="'+7 (###) ###-##-##'"
+                      :default-country-code="editedItem.country_code"
+                      @update="showPL"
                       label="Номер телефона *"
-                    ></v-text-field>
+                      :translations="{
+                        countrySelectorLabel: 'Код страны',
+                        countrySelectorError: 'Неверный номер телефона',
+                        phoneNumberLabel: 'Введите номер телефона',
+                        example: 'Например :',
+                      }"
+                    ></vue-phone-number-input>
+                  </v-col>
+                  <v-col cols="12">
+                    <date-picker
+                      lang="ru"
+                      v-model="editedItem.birthday"
+                      valueType="format"
+                      placeholder="Дата рождения *"
+                      format="YYYY-MM-DD"
+                      :disabled-date="featureDates"
+                    ></date-picker>
                   </v-col>
                   <v-col cols="12">
                     <v-text-field
@@ -86,15 +104,7 @@
                       label="Город, населенный пункт *"
                     ></v-text-field>
                   </v-col>
-                  <v-col cols="12">
-                    <v-text-field
-                      outlined
-                      dense
-                      type="date"
-                      v-model="editedItem.birthday"
-                      label="Дата рождения *"
-                    ></v-text-field>
-                  </v-col>
+
                   <v-col class="d-flex" cols="12">
                     <v-select
                       :items="discharges"
@@ -107,45 +117,6 @@
                       outlined
                     ></v-select>
                   </v-col>
-                  <v-col class="d-flex" cols="12">
-                    <v-select
-                      :items="disciplines"
-                      v-model="editedItem.discipline_id"
-                      name="editedItem.discipline_id"
-                      item-value="id"
-                      item-text="name"
-                      label="Дисциплина *"
-                      dense
-                      outlined
-                    ></v-select>
-                  </v-col>
-                  <v-col class="d-flex" cols="12">
-                    <v-select
-                      :items="classes"
-                      v-model="editedItem.class_id"
-                      name="editedItem.class_id"
-                      item-value="id"
-                      item-text="name"
-                      label="Класс *"
-                      dense
-                      outlined
-                    ></v-select>
-                  </v-col>
-                  <v-radio-group class="mt-0" v-model="editedItem.vroo">
-                    <template v-slot:label>
-                      <div>Являетесь ли вы членом ВРОО "ВолФес"?</div>
-                    </template>
-                    <v-radio value="1">
-                      <template v-slot:label>
-                        <div>Да</div>
-                      </template>
-                    </v-radio>
-                    <v-radio value="0">
-                      <template v-slot:label>
-                        <div>Нет</div>
-                      </template>
-                    </v-radio>
-                  </v-radio-group>
                   <v-col cols="12">
                     <v-checkbox
                       v-model="editedItem.status"
@@ -209,57 +180,81 @@
 import { HTTP } from '@/plugins/api'
 import moment from 'moment'
 
+import VuePhoneNumberInput from 'vue-phone-number-input'
+import 'vue-phone-number-input/dist/vue-phone-number-input.css'
+
+import DatePicker from 'vue2-datepicker'
+import 'vue2-datepicker/index.css'
+import 'vue2-datepicker/locale/ru';
+
 export default {
-  data: () => ({
-    dialog: false,
-    headers: [
-      { text: 'Фамилия', value: 'last_name' },
-      { text: 'Имя', value: 'first_name' },
-      { text: 'Телефон', value: 'phone' },
-      { text: 'Дата рождения', value: 'birthday' },
-      { text: '', value: 'actions', sortable: false, align: 'right' },
-    ],
-    sportsmen: [],
-    discharges:[], // v-select
-    disciplines: [], // v-select
-    classes: [], // v-select
-    editedIndex: -1,
-    editedItem: {
-      id: null,
-      first_name: null,
-      last_name: null,
-      middle_name: null,
-      phone: null,
-      email: null,
-      location: null,
-      birthday: null,
-      discharge_id: 0,
-      discipline_id: 0,
-      class_id: 0,
-      vroo: 0,
-      status: 0,
-    },
-    defaultItem: {
-      id: null,
-      first_name: null,
-      last_name: null,
-      middle_name: null,
-      phone: null,
-      email: null,
-      location: null,
-      birthday: null,
-      discharge_id: 0,
-      discipline_id: 0,
-      class_id: 0,
-      vroo: 0,
-      status: 0,
-    },
-  }),
+  components: {
+    VuePhoneNumberInput,
+    DatePicker
+  },
+  data() {
+    return {
+      dialog: false,
+      headers: [
+        { text: 'Фамилия', value: 'last_name' },
+        { text: 'Имя', value: 'first_name' },
+        { text: 'Телефон', value: 'format_international' },
+        { text: 'Дата рождения', value: 'birthday' },
+        { text: '', value: 'actions', sortable: false, align: 'right' },
+      ],
+      sportsmen: [],
+      discharges:[], // v-select
+      disciplines: [], // v-select
+      classes: [], // v-select
+      editedIndex: -1,
+      editedItem: {
+        id: null,
+        first_name: null,
+        last_name: null,
+        middle_name: null,
+        country_code: 'RU',
+        phone: null,
+        format_international: null,
+        email: null,
+        location: null,
+        birthday: null,
+        discharge_id: 0,
+        status: 0,
+      },
+      defaultItem: {
+        id: null,
+        first_name: null,
+        last_name: null,
+        middle_name: null,
+        country_code: 'RU',
+        phone: null,
+        format_international: null,
+        email: null,
+        location: null,
+        birthday: null,
+        discharge_id: 0,
+        status: 0,
+      },
+    }
+  },
 
   computed: {
     formTitle () {
       return this.editedIndex === -1 ? 'Добавить спортсмена' : 'Изменить спортсмена'
-    }
+    },
+    // format() {
+    //   //return moment(dat).format('D MMMM YYYY')
+    //   return {
+    //     //[optional] Date to String
+    //     stringify: (date) => {
+    //       return date ? moment(date).format('D M YYYY') : ''
+    //     },
+    //     //[optional]  String to Date
+    //     parse: (value) => {
+    //       return value ? moment(value, 'D M YYYY').toDate() : null
+    //     }
+    //   }
+    // }
   },
 
   watch: {
@@ -274,6 +269,10 @@ export default {
   },
 
   methods: {
+    showPL(payload) {
+      this.editedItem.country_code = payload.countryCode
+      this.editedItem.format_international = payload.formatInternational
+    },
     initialize () {
       HTTP.get('get_all.php')
       .then( response => {
@@ -349,6 +348,7 @@ export default {
           console.log('Hello error', error)
         })
       } else {
+        console.log(this.editedItem)
         HTTP.post('add.php', this.editedItem, {
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         })
@@ -368,6 +368,9 @@ export default {
     },
     formatDate(dat) {
       return moment(dat).format('D MMMM YYYY')
+    },
+    featureDates(date) {
+      return date > new Date();
     }
   }
 }
@@ -379,5 +382,12 @@ export default {
 }
 .col {
   padding: 0 !important;
+}
+.mx-datepicker {
+  width: 100% !important;
+  margin-bottom: 25px;
+}
+.v-text-field--outlined fieldset {
+  border-color: #ccc !important;
 }
 </style>

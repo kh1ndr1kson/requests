@@ -1,6 +1,6 @@
 {
   "name": "sportsmen",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -14,6 +14,8 @@
     "vue": "^2.6.11",
     "vue-axios": "^3.2.4",
     "vue-moment": "^4.1.0",
+    "vue-phone-number-input": "^1.1.10",
+    "vue2-datepicker": "^3.9.0",
     "vuetify": "^2.4.0",
     "vuex": "^3.6.2"
   },
