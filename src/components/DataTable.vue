@@ -204,8 +204,6 @@ export default {
       ],
       sportsmen: [],
       discharges:[], // v-select
-      disciplines: [], // v-select
-      classes: [], // v-select
       editedIndex: -1,
       editedItem: {
         id: null,
@@ -242,19 +240,6 @@ export default {
     formTitle () {
       return this.editedIndex === -1 ? 'Добавить спортсмена' : 'Изменить спортсмена'
     },
-    // format() {
-    //   //return moment(dat).format('D MMMM YYYY')
-    //   return {
-    //     //[optional] Date to String
-    //     stringify: (date) => {
-    //       return date ? moment(date).format('D M YYYY') : ''
-    //     },
-    //     //[optional]  String to Date
-    //     parse: (value) => {
-    //       return value ? moment(value, 'D M YYYY').toDate() : null
-    //     }
-    //   }
-    // }
   },
 
   watch: {
@@ -285,12 +270,6 @@ export default {
       // push discharges (v-select)
       HTTP.get('select/discharges.php')
       .then( response => this.discharges = response.data )
-      // push discharges (v-select)
-      HTTP.get('select/disciplines.php')
-      .then( response => this.disciplines = response.data )
-      // push classes (v-select)
-      HTTP.get('select/classes.php')
-      .then( response => this.classes = response.data )
     },
 
     editItem (item) {
