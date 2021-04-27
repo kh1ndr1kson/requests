@@ -6,7 +6,7 @@ import store from './store'
 
 import { VueMaskDirective } from 'v-mask'
 
-Vue.config.productionTip = true
+Vue.config.productionTip = false
 
 Vue.directive('mask', VueMaskDirective);
 Vue.use(VueMoment, { moment })
