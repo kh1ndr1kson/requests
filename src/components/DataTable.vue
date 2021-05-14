@@ -127,7 +127,7 @@
       {{ item.event.title }}
     </template>
     <template v-slot:item.status="{ item }">
-      <span :style="item.id ? 'color: green' : 'color: red'">
+      <span :style="item.status ? 'color: green' : 'color: red'">
         {{ requestStatus(item.status) }}
       </span>
     </template>
