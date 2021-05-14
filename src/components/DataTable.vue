@@ -127,7 +127,7 @@
       {{ item.event.title }}
     </template>
     <template v-slot:item.status="{ item }">
-      <span :style="item.status ? 'color: green' : 'color: red'">
+      <span :style="item.status == 1 ? 'color: green' : 'color: red'">
         {{ requestStatus(item.status) }}
       </span>
     </template>
@@ -272,7 +272,7 @@ export default {
       return '№' + id + ' от ' + this.formatDate(date)
     },
     requestStatus(status) {
-      return status ? 'Активная' : 'Не активная'
+      return status == 1 ? 'Активная' : 'Не активная'
     },
     formatDate(dat) {
       return moment(dat).format('D MMMM YYYY')
